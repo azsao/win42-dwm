@@ -22,10 +22,6 @@ log "Completed DWM installation script"
 
 sleep (90)
 
-log "Running neovim lazyvim script"
-./neovim.sh
-log "Completed neovim lazyvim script"
-
 log "Running dwm configuration script"
 ./config.sh
 log "Completed dwm configuration script"

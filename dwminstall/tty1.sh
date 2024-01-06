@@ -32,6 +32,8 @@ cd
 time (5)
 
 # dependencies for config
+cd ...
 
 sudo pacman -S --noconfirm nvim kitty yay 
 sudo pacman -S --noconfirm pipewire pipewire-pulse pw-volume
+sudo pacman -S --noconfirm xclip
