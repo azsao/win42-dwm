@@ -14,3 +14,9 @@ Your main dwm install is located here, it is not to be confused with:
 
 `~/.suckless`
 These are your configuartion files, feel free to tweak them as needed, in this repository, it should have set up a user-friendly information
+
+# Credits:
+
+Credits to Lazyvim(https://www.lazyvim.org/) for the neovim configuration
+
+

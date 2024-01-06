@@ -30,3 +30,8 @@ sudo make clean install
 cd
 
 time (5)
+
+# dependencies for config
+
+sudo pacman -S --noconfirm nvim kitty yay 
+sudo pacman -S --noconfirm pipewire pipewire-pulse pw-volume
