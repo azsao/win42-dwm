@@ -1,7 +1,0 @@
-**The following are patches to be used and inputed into the dwm.c list**
-
-https://lists.suckless.org/dwm/0903/7773.html
-buttonkillclient.c 
-timemovemouse.c 
-
-
