@@ -91,6 +91,8 @@ useradd -m $USER
 passwd $USER $USRPSWD
 usermod -aG wheel,storage,power,audio $USER
 
+sed -i '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
+
 # Language setup
 sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
