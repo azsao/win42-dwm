@@ -47,16 +47,12 @@ mkfs.fat -F 32 /dev/$EFI
 mount /dev/$ROOT /mnt
 mount --mkdir /dev/$EFI /mnt/boot
 
-sleep 15
-
 # Timezone
 timedatectl set-timezone America/New_York
 
-sleep 2
 
 # Mirrors
 cp /etc/pacman.d/mirrorlist /etc/pacman.d/mirrorlist.bak
-sleep 120
 pacman -Sy
 pacman -S 
 rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
@@ -64,36 +60,30 @@ rankmirrors -n 10 /etc/pacman.d/mirrorlist.bak > /etc/pacman.d/mirrorlist
 # Pacstrap (ADD CPU/GPU ucodes for a variety of devices)
 case $CPU in
     1)
-        Pacstrap -i /mnt base base-devel linux linux-headers linux-firmware mesa xf86-video-amdgpu amd-ucode vulkan-radeon sudo nano git neofetch networkmanager dhcpcd pipewire bluez wpa_supplicant bluez-utils
+        pacstrap -i /mnt base base-devel linux linux-headers linux-firmware mesa xf86-video-amdgpu amd-ucode vulkan-radeon sudo nano git neofetch networkmanager dhcpcd pipewire bluez wpa_supplicant bluez-utils
         ;;
     2)
-        Pacstrap -i /mnt base base-devel linux linux-headers linux-firmware intel-ucode xf86-video-intel sudo nano git neofetch networkmanager dhcpcd pipewire bluez wpa_supplicant bluez-utils
+        pacstrap -i /mnt base base-devel linux linux-headers linux-firmware intel-ucode xf86-video-intel sudo nano git neofetch networkmanager dhcpcd pipewire bluez wpa_supplicant bluez-utils
         ;;
     3)
-        Pacstrap -i /mnt base base-devel linux linux-headers linux-firmware nvidia sudo nano git neofetch networkmanager dhcpcd pipewire bluez wpa_supplicant bluez-utils
+        pacstrap -i /mnt base base-devel linux linux-headers linux-firmware nvidia sudo nano git neofetch networkmanager dhcpcd pipewire bluez wpa_supplicant bluez-utils
         ;;
     *)
         echo "Invalid choice. Please choose a number between 1 and 3."
         ;;
 esac
 
-sleep 3m
-
 case $DESKTOP in
     1)
         echo "Installed!"
         ;; 
     2)
-        Pacstrap -i /mnt tlp brightnessctl lm_sensors libinput
+        pacstrap -i /mnt tlp brightnessctl lm_sensors libinput
         ;;
 esac
 
-sleep 110
-
 # fstab
 genfstab -U /mnt >> /mnt/etc/fstab
-
-sleep 2m
 
 # Chroot time *MAY BE ISSUES HERE, DOUBLE CHECK*
 arch-chroot /mnt
@@ -104,12 +94,9 @@ usermod -aG wheel,storage,power,audio $USER
 
 sed -i '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
 
-sleep 2m
-
 # Language setup
 sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
 locale-gen
-sleep 50
 echo "LANG=en_US.UTF-8" >> /etc/locale.conf
 export LANG=en_US.UTF-8
 
@@ -129,7 +116,6 @@ if [ "$WINEFI" != "NONE" ]; then
 mkdir /boot/grub
 mount /dev/$WINEFI /boot/grub/
 pacman -S grub efibootmgr dosfstools mtools
-sleep 2m
 
 # Edit /etc/default/grub and uncomment GRUB_DISABLE_OS_PROBER
 if [ -f /etc/default/grub ]; then
