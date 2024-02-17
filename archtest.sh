@@ -42,7 +42,12 @@ echo "example: Nvme0n1p1 for windows"
 echo "If none, write NONE" 
 read WINEFI
 
-
+mkfs.ext4 /dev/$ROOT
+mkswap /dev/$SWAP
+swapon /dev/$SWAP
+mkfs.fat -F 32 /dev/$EFI
+mount /dev/$ROOT /mnt
+mount --mkdir /dev/$EFI /mnt/boot
 
 # Timezone
 timedatectl set-timezone America/New_York
