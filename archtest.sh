@@ -34,10 +34,15 @@ read USER
 echo "Choose your user's password"
 read  USRPSWD
 
+echo "Choose your hostname password"
+read  HOST
+
 echo "What is your Dual-Boot EFI partition"
 echo "example: Nvme0n1p1 for windows"
 echo "If none, write NONE" 
 read WINEFI
+
+
 
 # Timezone
 timedatectl set-timezone America/New_York
@@ -86,19 +91,22 @@ usermod -aG wheel,storage,power,audio $USER
 
 sed -i '/^# %wheel ALL=(ALL:ALL) ALL/s/^# //' /etc/sudoers
 
-# Language setup
-sed -i 's/^#en_US.UTF-8 UTF-8/en_US.UTF-8 UTF-8/' /etc/locale.gen
-locale-gen
-echo "LANG=en_US.UTF-8" >> /etc/locale.conf
-export LANG=en_US.UTF-8
 
-# Hostname
-echo AUR > /etc/hostname
-cat <<EOF > /etc/hosts
-127.0.0.1	localhost
-::1			localhost
-127.0.1.1	AUR.localdomain    localhost
-EOF
+arch-chroot /mnt bash -c "ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime && hwclock --systohc && sed -i 's/#en_US.UTF-8/en_US.UTF-8/' /etc/locale.gen && locale-gen && echo 'LANG=en_US.UTF-8' > /etc/locale.conf && exit"
+
+	arch-chroot /mnt bash -c "echo $HOST > /etc/hostname && echo 127.0.0.1	$HOST > /etc/hosts && echo ::1	$HOST >> /etc/hosts && echo 127.0.1.1	$HOST.localdomain	$HOST >> /etc/hosts && exit"
+    locale-gen
+    export LANG=en_US.UTF-8
+	arch-chroot /mnt bash -c "passwd && useradd --create-home $USER && echo 'set user password' && passwd $USER && groupadd sudo && gpasswd -a $USER sudo && EDITOR=vim visudo && exit"
+
+	arch-chroot /mnt bash -c "systemctl enable bluetooth && exit"
+	arch-chroot /mnt bash -c "systemctl enable NetworkManager && exit"
+	
+	arch-chroot /mnt bash -c "systemctl enable paccache.timer && exit"
+
+	echo -e "Editing configuration files...\n"
+	# Enabling multilib in pacman
+	arch-chroot /mnt bash -c "sed -i '93s/#\[/\[/' /etc/pacman.conf && sed -i '94s/#I/I/' /etc/pacman.conf && pacman -Syu && sleep 1 && exit"
 
 # Location pt2 in Chroot
 ln -sf /usr/share/zoneinfo/America/New_York /etc/localtime
@@ -128,17 +136,16 @@ case $DESKTOP in
         lsblk
         ;; 
     2)
-        systemctl enable bluetooth
-        systemctl start bluetooth
-        systemctl enable tlp
-        systemctl start tlp
+        arch-chroot /mnt bash -c "systemctl enable bluetooth"
+        arch-chroot /mnt bash -c "systemctl start bluetooth"
+        arch-chroot /mnt bash -c "systemctl enable tlp"
+        arch-chroot /mnt bash -c "systemctl start tlp"
         ;;
 esac
 
-systemctl enable dhcpcd.service
-systemctl enable NetworkManager.service
+arch-chroot /mnt bash -c "systemctl enable dhcpcd.service"
+arch-chroot /mnt bash -c "systemctl enable NetworkManager.service"
 
 # finish the system
 exit
 umount -lR /mnt
-reboot 
